@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MapEditor
+Bundle-SymbolicName: MapEditor; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: tool.mapeditor.Activator
+Bundle-Vendor: cjw-corp
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lwjgl_util.jar,
+ lwjgl.jar,
+ transform-3.0.2.jar,
+ swing2swt.jar

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="tool.mapeditor.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="tool.mapeditor.Perspective"
+            id="mapeditor.Perspective"
+            name="New Perspective">
+      </perspective>
+      <perspective
+            class="tool.mapeditor.Perspective"
+            id="tool.mapeditor.Perspective"
+            name="New Perspective">
+      </perspective>
+      <perspective
+            class="tool.mapeditor.Perspective1"
+            id="tool.mapeditor.Perspective1"
+            name="New Perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="tool.mapeditor.LayerView"
+            id="mapeditor.LayerView"
+            name="LayerView">
+      </view>
+      <view
+            class="tool.mapeditor.MapView"
+            id="mapeditor.MapView"
+            allowMultiple="true"
+            name="MapView">
+      </view>
+      <view
+            class="tool.mapeditor.ResourceView"
+            id="mapeditor.SourceView"
+            name="SourceView">
+      </view>
+      <view
+            class="tool.mapeditor.GroupView"
+            id="tool.mapeditor.GroupView"
+            name="GroupView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+         <command name="New Map"
+                  description="Create a new map"
+                  id="new">
+         </command>
+         <command name="Open Map"
+                  description="Open a existing map"
+                  id="open">
+         </command>
+         <command name="Save Map"
+                  description="Save the current map"
+                  id="save">
+         </command>
+         <command name="Exit"
+                  description="Exit map editor"
+                  id="exit">
+         </command>
+         <command name="New Resource"
+                  description="Create a new resource set"
+                  id="new.resource">
+         </command>
+         <command name="New Layer"
+                  description="Create a new map layer"
+                  id="new.layer">
+         </command>
+         <command name="Splite image"
+                  description="Splite a image"
+                  id="image.splite">
+         </command>
+         <command name="Export data"
+                  description="Export map datas"
+                  id="export.data">
+         </command>
+         <command name="Play animation"
+                  description="Play map animations"
+                  id="play.animation">
+         </command>
+         <command name="Grid align"
+                  description="Align an element to grid"
+                  id="grid.align">
+         </command>
+         <command name="Cell property"
+                  description="Property of an element"
+                  id="cell.property">
+         </command>
+         <command name="Select"
+                  description="Select and move an element"
+                  id="select">
+         </command>
+         <command name="Rectangle region"
+                  description="Create a rectangle region"
+                  id="rect.region">
+         </command>
+         <command name="Vertex add"
+                  description="Add a vertex"
+                  id="vertex.add">
+         </command>
+         <command name="Vertex delete"
+                  description="Delete a vertex"
+                  id="vertex.del">
+         </command>
+         <command name="Shape region"
+                  description="Reshape a region"
+                  id="shape.region">
+         </command>
+         <command name="Region attribute"
+                  description="Edit the attribute of a region"
+                  id="region.attribute">
+         </command>
+         <command name="Map Collision"
+                  description="Map region to tiles"
+                  id="map.collision">
+         </command>
+         <command name="Background"
+                  description="Background of a map"
+                  id="map.background">
+         </command>
+         <command name="Remove layer"
+                  description="Remove a layer of a map"
+                  id="remove.layer">
+         </command>
+         <command name="Export npc"
+                  description="Export npc of each map"
+                  id="export.npc">
+         </command>
+         <command name="Merge npc"
+                  description="Merge npcs of all maps"
+                  id="merge.npc">
+         </command>
+         <command name="Import npc model"
+                  description="Import a npc model file"
+                  id="import.npc.model">
+         </command>
+         <command name="Map properties"
+                  description="Manipulate map properties"
+                  id="map.property">
+         </command>
+         <command name="Export map"
+                  description="Export a map"
+                  id="export.map">
+         </command>
+         <command name="Import map"
+                  description="Import a map"
+                  id="import.map">
+         </command>
+         <command name="Delete source"
+                  description="Delete a source group"
+                  id="delete.source">
+         </command>
+         <command name="Open data folder"
+                  description="Open the folder of exported datas"
+                  id="open.export">
+         </command>
+         <command name="Edit meta data"
+                  description="edit meta datas"
+                  id="metadata">
+         </command>
+      <command name="Add resource item"
+               description="add a resource item"
+               id="add.resource">
+      </command>
+      <command name="Resource prefix"
+               description="edit resource prefix"
+               id="resource.property">
+      </command>
+      <command name="ResouceView resize"
+               description="Resize the displaying image in the resource view"
+               id="resourceview.resize">
+      </command>
+     </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="MapEditor.application"
+            name="ME">
+         <property
+               name="appName"
+               value="ME">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+
+</plugin>
