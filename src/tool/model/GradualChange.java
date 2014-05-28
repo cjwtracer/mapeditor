@@ -61,6 +61,7 @@ public abstract class GradualChange implements Serializable{
 	}
 	
 	public byte type;
+	public double duration;
 	boolean reverse;
 	int gap = GAP_DEFAULT;
 

@@ -19,6 +19,7 @@ import tool.mapeditor.application.ResourceDescriptor.ItemDescriptor;
 import tool.model.MapLayer;
 import tool.model.RegionPolygon;
 import tool.model.Unit;
+import tool.model.UnitGroup;
 import tool.model.WorldMap;
 import tool.util.GLUtil;
 
@@ -29,6 +30,7 @@ import tool.util.GLUtil;
  */
 public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldMapEdit {
 	static HashMap<Integer, MapDescriptor> stack = new HashMap<Integer, MapDescriptor>();
+	static boolean isRehearsal;
 	
 	/**
 	 * Descriptor of model map layer.
@@ -52,7 +54,11 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 			List<Unit> srcUnits = layer.getUnits();
 			units = new ArrayList<UnitDescriptor>(srcUnits.size());
 			for(Unit su : srcUnits){
-				units.add(new UnitDescriptor(su, this));
+				if(su instanceof UnitGroup){
+					units.add(new UnitGroupDescriptor((UnitGroup)su, this));
+				}else{
+					units.add(new UnitDescriptor(su, this));
+				}
 			}
 			regions = new ArrayList<RegionDescriptor>();
 			for(RegionPolygon r : layer.getRegions()){
@@ -73,6 +79,10 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 			return layer.visible;
 		}
 
+		/**
+		 * 设置该地图层是否可见。若不可见，则层上所有元素都不可见。（却可以操作，这个问题需要修改）
+		 * @param visible
+		 */
 		public void setVisible(boolean visible) {
 			layer.visible = visible;
 		}
@@ -108,6 +118,12 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 			units.add(u);
 		}
 
+		/**
+		 * 复制指定的地图元素到指定位置
+		 * @param x
+		 * @param y
+		 * @param source
+		 */
 		public void addUnitAt(int x, int y, UnitDescriptor source) {
 			Unit srcU = source.unit.getCopy(layer);
 			srcU.setX(x);
@@ -147,30 +163,6 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 	}
 	
 	/**
-	 * the underline model of the descriptor
-	 */
-	WorldMap worldMap;
-	List<LayerDescriptor> layers;
-	/**
-	 * the selected index of layer in the layers stack
-	 */
-	int currentLayerIndex = -1;
-	/**
-	 * the selected layer
-	 */
-	private LayerDescriptor currentLayer;
-	byte editType = TYPE_UNIT;
-	byte editMode = MODE_PLACE;
-	/**
-	 * the background image of the map
-	 */
-	Texture background;
-	/**
-	 * flag determine whether to play the animations on the map
-	 */
-	boolean playAnimation;
-	
-	/**
 	 * Get a descriptor of the specified map, if the descriptor doesn't exist,
 	 * it creates a new one.
 	 * 
@@ -197,6 +189,33 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 		}
 		return md;
 	}
+	
+	/**
+	 * the underline model of the descriptor
+	 */
+	WorldMap worldMap;
+	List<LayerDescriptor> layers;
+	/**
+	 * the selected index of layer in the layers stack
+	 */
+	int currentLayerIndex = -1;
+	/**
+	 * the selected layer
+	 */
+	private LayerDescriptor currentLayer;
+	/**
+	 * 标记当前添加到地图上的元素，会作为哪种类型
+	 */
+	byte editType = TYPE_UNIT;
+	byte editMode = MODE_PLACE;
+	/**
+	 * the background image of the map
+	 */
+	Texture background;
+	/**
+	 * flag determine whether to play the animations on the map
+	 */
+	boolean playAnimation;
 
 	/**
 	 * Create a object of descriptor according to the specified model, and modify
@@ -204,7 +223,7 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 	 * 
 	 * @param worldMap
 	 */
-	private MapDescriptor(WorldMap worldMap){
+	MapDescriptor(WorldMap worldMap){
 		this.worldMap = worldMap;
 		layers = new ArrayList<LayerDescriptor>(worldMap.getLayers().size());
 		for(MapLayer ly : worldMap.getLayers()){
@@ -225,12 +244,16 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 		return worldMap.getName();
 	}
 
+	/**
+	 * 获取地图文件ID。每一地图有一个独一无二的文件ID，用于数据的持久化。
+	 * @return
+	 */
 	public int getMapFileId() {
 		return worldMap.getFileID();
 	}
 	
 	/**
-	 * Get the showing id.
+	 * Get the id of map.
 	 */
 	public int getMapID(){
 		return worldMap.getExpID();
@@ -248,6 +271,8 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 	}
 	
 	public void paintGrid(int offx, int offy){
+		if(isRehearsal)
+			return;
 		GL11.glColor4f(0, 1, 0, 0.5f);
 		int tw = worldMap.getTileWidth(), th = worldMap.getTileHeight();
 		int w = worldMap.getWidth() * tw;
@@ -290,12 +315,18 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 		return worldMap.getLayers().size();
 	}
 	
+	/**
+	 * 在指定位置新建一个地图层
+	 */
 	public void createLayer(int pos){
 		MapLayer ly = WorldMap.newMapLayer(worldMap);
 		worldMap.getLayers().add(pos, ly);
 		layers.add(pos, new LayerDescriptor(ly));
 	}
 
+	/**
+	 * 移除指定位置的地图层
+	 */
 	public void removeLayer(int index) {
 		worldMap.getLayers().remove(index);
 		layers.remove(index);
@@ -349,15 +380,32 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 
 	public Drawable select(int x, int y) {
 		Drawable d = null;
-		int i = currentLayer.units.size() - 1;
-		for (; i >= 0; --i) {
+		units:
+		for (int i = currentLayer.units.size() - 1; i >= 0; i--) {
 			UnitDescriptor u = currentLayer.units.get(i);
 			if (u.anim != null && u.anim.locus.contains(x, y)) {
 				d = u.anim.locus;
 				break;
-			} else if (u.getBounds().contains(x, y)) {
-				d = u;
-				break;
+			} else{
+				if(u instanceof UnitGroupDescriptor){
+					UnitGroupDescriptor ug = (UnitGroupDescriptor)u;
+					for(UnitDescriptor c : ug.cells){
+						Rectangle b = c.getBounds();
+						int px1 = b.x + ug.unit.getX();
+						int py1 = b.y + ug.unit.getY();
+						int px2 = px1 + b.width;
+						int py2 = py1 + b.height;
+						if(px1 < x && x < px2 && py1 < y && y < py2){
+							d = ug;
+							break units;
+						}
+					}
+				}else{
+					if (u.getBounds().contains(x, y)) {
+						d = u;
+						break;
+					}
+				}
 			}
 		}
 		if(editMode != MODE_MOVE && d == null){
@@ -498,6 +546,11 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 
 	public void updateAnimations() {
 		worldMap.updateAnimations();
+		for(LayerDescriptor l : layers){
+			for(UnitDescriptor u : l.units){
+				u.updateAnimation();
+			}
+		}
 	}
 
 	public void initAnimations() {
@@ -530,17 +583,9 @@ public class MapDescriptor extends Descriptor implements WorldMapPainter, WorldM
 		return sb.toString();
 	}
 
-	@Override
-	public void getAllDrawables(List drawableList) {
-		if(drawableList == null)
-			throw new NullPointerException();
-		for(LayerDescriptor ly : getLayers()){
-			for(UnitDescriptor u : ly.units){
-				drawableList.add(u);
-			}
-		}
-	}
-
+	/**
+	 * 更新所有元素的图片
+	 */
 	protected void updateImage() {
 		for(LayerDescriptor ly : getLayers()){
 			for(TileDescriptor t : ly.tiles){

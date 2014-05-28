@@ -278,12 +278,8 @@ public class RegionDescriptor extends Descriptor implements Drawable {
 		return b;
 	}
 
-	public boolean[] getEditabilities() {
-		boolean[] bs = new boolean[list.length];
-		for(int i = 0; i < bs.length; ++i){
-			bs[i] = true;
-		}
-		return bs;
+	public boolean getEditabilities(Enum<?> i) {
+		return true;
 	}
 
 	public void onDragOver() {

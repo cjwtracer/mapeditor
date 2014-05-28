@@ -82,6 +82,9 @@ public class WindowsHarbor {
 		return v.canvas.firedUnit;
 	}
 
+	/**
+	 * 在地图层面板中移除选中的层
+	 */
 	public void removeLayer() {
 		try {
 			LayerView view = (LayerView)window.getActivePage().showView(LayerView.ID);
@@ -100,6 +103,10 @@ public class WindowsHarbor {
 		return v.currentResource;
 	}
 	
+	/**
+	 * 获取资源面板引用
+	 * @return
+	 */
 	public ResourceView findResourceView(){
 		return (ResourceView)window.getActivePage().findView(ResourceView.ID);
 	}
@@ -125,6 +132,10 @@ public class WindowsHarbor {
 		gridAlign = align;
 	}
 
+	/**
+	 * 设置当前的编辑模式，在不同的编辑模式下，地图上可编辑的元素是不同的
+	 * @param mode
+	 */
 	public void setEditMode(byte mode) {
 		editMode = mode;
 		MapView v = (MapView)window.getActivePage().findView(MapView.ID);
@@ -139,11 +150,18 @@ public class WindowsHarbor {
 		v.canvas.redraw();
 	}
 
+	/**
+	 * 获取当前选中的地图区域
+	 * @return
+	 */
 	public Drawable getCurrentRegion() {
 		MapView v = (MapView)window.getActivePage().findView(MapView.ID);
 		return v.canvas.firedRegion;
 	}
 
+	/**
+	 * 启动地图动画
+	 */
 	public void notifyPlayThread() {
 		MapView v = (MapView)window.getActivePage().findView(MapView.ID);
 		if(v.mapPainter != null){
@@ -159,24 +177,38 @@ public class WindowsHarbor {
 		return window;
 	}
 
+	/**
+	 * 警告对话框
+	 * @param message
+	 */
 	public void alert(String message) {
 		MessageDialog.openError(window.getShell(), "警告", message);
 	}
 	
+	/**
+	 * 提示对话框
+	 * @param message
+	 */
 	public void inform(String message){
 		MessageDialog.openInformation(window.getShell(), "提示", message);
 	}
-	
-	public void setMapTitle(String title){
-		MapView v = (MapView)window.getActivePage().findView(MapView.ID);
-		v.setMapTitle(title);
-	}
 
+	/**
+	 * 获取当前选择的资源组
+	 * @return
+	 */
 	public Resource getCurrentResourceSet() {
 		ResourceView v = (ResourceView)window.getActivePage().findView(ResourceView.ID);
 		return v.resourceSet;
 	}
 
+	/**
+	 * 滚动地图，使得指定区域在地图面板中可见
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
 	public void scollMapToShow(int x, int y, int width, int height) {
 		MapView v = (MapView)window.getActivePage().findView(MapView.ID);
 		Rectangle client = v.canvas.rectCanvas;
@@ -185,6 +217,14 @@ public class WindowsHarbor {
 		v.canvas.redraw();
 	}
 
+	/**
+	 * 在当前选择的资源组中，添加指定名称和来源的图片
+	 * 
+	 * @param f
+	 *            图片来源
+	 * @param name
+	 *            资源项名称
+	 */
 	public void addResourceItem(String f, String name) {
 		ResourceView v = findResourceView();
 		v.addResourceItem(f, name);

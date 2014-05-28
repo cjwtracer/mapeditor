@@ -63,71 +63,7 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 	static HashMap<Short, ResourceDescriptor> stack = new HashMap<Short, ResourceDescriptor>();
 
 	static Texture background;
-
-	public static void getAndSaveBackground(String imgFile, String toDir) {
-		background = GLUtil.loadTexture(imgFile);
-		StringBuffer sb = new StringBuffer(toDir);
-		String name = sb.append(BACKGROUND_NAME).append(imgFile.substring(imgFile.lastIndexOf("."))).toString();
-		Properties prop  = new Properties();
-		prop.setProperty(BACKGROUND_NAME, name);
-		try {
-			FileUtil.checkPath(toDir);
-			prop.store(new FileWriter(toDir + BACKGROUND_INDEX), "");
-			ImageUtil.saveImage(new ImageData(imgFile), name);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static String getCurrentClass() {
-		return resourceClasses[currentRes];
-	}
-
-	public static void setCurrentClass(String s) {
-		boolean exist = false;
-		int i = -1;
-		for(String cls : resourceClasses){
-			if(cls.equals(s)){
-				exist = true;
-				currentRes = i;
-				break;
-			}
-			i++;
-		}
-		if(exist){
-			for(ResourceDescriptor rd : stack.values()){
-				for(ItemDescriptor item : rd.resourceItems){
-					if(item.texes.containsKey(s))
-						item.texture = item.texes.get(s);
-				}
-			}
-		}
-	}
-
-	public static void loadResourceClasses(String dir) {
-		Properties p = new Properties();
-		FileUtil.loadProperties(p, dir + "classes.config");
-		String clses = p.getProperty(CLASSES_KEY);
-		if(clses != null){
-			String[] cs = clses.split(Constants.SEP);
-			resourceClasses = new String[1 + cs.length];
-			resourceClasses[0] = DEFAULT_CLASS;
-			System.arraycopy(resourceClasses, 0, cs, 0, cs.length);
-		}else{
-			resourceClasses = new String[]{DEFAULT_CLASS};
-		}
-	}
 	
-	public static void saveResourceClasses(String dir) throws IOException{
-		Properties p = new Properties();
-		StringBuffer rslt = new StringBuffer(resourceClasses.length == 0 ? "" : resourceClasses[0]);
-		for(int i = 1; i < resourceClasses.length; i++)
-			rslt.append(Constants.SEP).append(resourceClasses[i]);
-		p.setProperty(CLASSES_KEY, rslt.toString());
-		FileUtil.saveProperties(p, dir + "classes.config");
-	}
-	
-	/*--------------------------------------------------------------------------*/
 	/**
 	 * Descriptor of the resource item model.
 	 */
@@ -235,6 +171,9 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 			return b;
 		}
 		
+		/**
+		 * 删除该资源项
+		 */
 		public void onDelete(){
 			resSet.resourceSet.removeItem(resourceItem);
 			resSet.resourceItems.remove(this);
@@ -286,8 +225,8 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 		public void reset() {}
 
 		@Override
-		public boolean[] getEditabilities() {
-			return null;
+		public boolean getEditabilities(Enum<?> i) {
+			return false;
 		}
 
 		@Override
@@ -302,14 +241,142 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 		public void releaseCopy() {}
 
 	}
-	
-	ResourceSet resourceSet;
-	List<ItemDescriptor> resourceItems;
-	
-	private ResourceDescriptor(ResourceSet resourceSet){
-		this.resourceSet = resourceSet;
+
+	/**
+	 * @deprecated
+	 * @param imgFile
+	 * @param toDir
+	 */
+	public static void getAndSaveBackground(String imgFile, String toDir) {
+		background = GLUtil.loadTexture(imgFile);
+		StringBuffer sb = new StringBuffer(toDir);
+		String name = sb.append(BACKGROUND_NAME).append(imgFile.substring(imgFile.lastIndexOf("."))).toString();
+		Properties prop  = new Properties();
+		prop.setProperty(BACKGROUND_NAME, name);
+		try {
+			FileUtil.checkPath(toDir);
+			prop.store(new FileWriter(toDir + BACKGROUND_INDEX), "");
+			ImageUtil.saveImage(new ImageData(imgFile), name);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
+	public static String getCurrentClass() {
+		return resourceClasses[currentRes];
+	}
+
+	public static void setCurrentClass(String s) {
+		boolean exist = false;
+		int i = -1;
+		for(String cls : resourceClasses){
+			if(cls.equals(s)){
+				exist = true;
+				currentRes = i;
+				break;
+			}
+			i++;
+		}
+		if(exist){
+			for(ResourceDescriptor rd : stack.values()){
+				for(ItemDescriptor item : rd.resourceItems){
+					if(item.texes.containsKey(s))
+						item.texture = item.texes.get(s);
+				}
+			}
+		}
+	}
+
+	public static void loadResourceClasses(String dir) {
+		Properties p = new Properties();
+		FileUtil.loadProperties(p, dir + "classes.config");
+		String clses = p.getProperty(CLASSES_KEY);
+		if(clses != null){
+			String[] cs = clses.split(Constants.SEP);
+			resourceClasses = new String[1 + cs.length];
+			resourceClasses[0] = DEFAULT_CLASS;
+			System.arraycopy(resourceClasses, 0, cs, 0, cs.length);
+		}else{
+			resourceClasses = new String[]{DEFAULT_CLASS};
+		}
+	}
+	
+	public static void saveResourceClasses(String dir) throws IOException{
+		Properties p = new Properties();
+		StringBuffer rslt = new StringBuffer(resourceClasses.length == 0 ? "" : resourceClasses[0]);
+		for(int i = 1; i < resourceClasses.length; i++)
+			rslt.append(Constants.SEP).append(resourceClasses[i]);
+		p.setProperty(CLASSES_KEY, rslt.toString());
+		FileUtil.saveProperties(p, dir + "classes.config");
+	}
+
+	/**
+	 * @deprecated
+	 * @param base
+	 * @throws IOException
+	 */
+	public static void loadBackground(String base) throws IOException{
+		Properties prop = new Properties();
+		try{
+			FileReader reader = new FileReader(base + BACKGROUND_INDEX);
+			prop.load(reader);
+		}catch(FileNotFoundException e){
+			return;
+		}
+		String path = prop.getProperty(BACKGROUND_NAME);
+		if(new File(path).exists())
+			background = GLUtil.loadTexture(path);
+	}
+	
+	/**
+	 * 根据指定的资源名称获取资源项
+	 * @param resource
+	 * @return
+	 */
+	public static ItemDescriptor getResourceItem(String resource){
+		String[] resName = parseResourceName(resource);
+		ResourceDescriptor resSet = null;
+		for(ResourceDescriptor set : stack.values()){
+			if(set.getName().equals(resName[0])){
+				resSet = set;
+				break;
+			}
+		}
+		if(resSet == null)
+			return null;
+		for(Drawable d : resSet.getResourceItems()){
+			ItemDescriptor rd = (ItemDescriptor)d;
+			if(rd.getName().equals(resName[1])){
+				return rd;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 释放所有资源组的图片资源
+	 */
+	public static void releaseResources(){
+		for(ResourceDescriptor rsd : stack.values()){
+			rsd.dispose();
+		}
+		if(background != null)
+			background.release();
+	}
+	
+	static String[] parseResourceName(String resource){
+		if(resource == null){
+			System.err.println("invalid resource");
+			return new String[2];
+		}
+		return resource.split(RES_SEP);
+	}
+
+	/**
+	 * 获取指定资源组的包装器，如果该资源组已存在，则从缓存中取得
+	 * @param rs
+	 * @return
+	 */
 	public static ResourceDescriptor getDescriptor(ResourceSet rs) {
 		ResourceDescriptor dsc = stack.get(rs.getId());
 		if(dsc == null){
@@ -319,13 +386,20 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 		return dsc;
 	}
 	
+	ResourceSet resourceSet;
+	List<ItemDescriptor> resourceItems;
+	
+	private ResourceDescriptor(ResourceSet resourceSet){
+		this.resourceSet = resourceSet;
+	}
+	
 	public List<ItemDescriptor> getResourceItems(){
 		if(resourceItems == null)
 			resourceItems = new ArrayList<ItemDescriptor>();
 		return resourceItems;
 	}
 	
-	public void setResourceItems(List<String> itemImages){
+	void setResourceItems(List<String> itemImages){
 		if(itemImages == null)
 			throw new NullPointerException();
 		int i = 0;
@@ -386,42 +460,6 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 				rd.dispose();
 			}
 	}
-	
-	public static void releaseResources(){
-		for(ResourceDescriptor rsd : stack.values()){
-			rsd.dispose();
-		}
-		if(background != null)
-			background.release();
-	}
-	
-	public static ItemDescriptor getResourceItem(String resource){
-		String[] resName = parseResourceName(resource);
-		ResourceDescriptor resSet = null;
-		for(ResourceDescriptor set : stack.values()){
-			if(set.getName().equals(resName[0])){
-				resSet = set;
-				break;
-			}
-		}
-		if(resSet == null)
-			return null;
-		for(Drawable d : resSet.getResourceItems()){
-			ItemDescriptor rd = (ItemDescriptor)d;
-			if(rd.getName().equals(resName[1])){
-				return rd;
-			}
-		}
-		return null;
-	}
-	
-	static String[] parseResourceName(String resource){
-		if(resource == null){
-			System.err.println("invalid resource");
-			return new String[2];
-		}
-		return resource.split(RES_SEP);
-	}
 
 	@Override
 	public String getName() {
@@ -430,19 +468,6 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 
 	public int getID() {
 		return resourceSet.getId();
-	}
-
-	public static void loadBackground(String base) throws IOException{
-		Properties prop = new Properties();
-		try{
-			FileReader reader = new FileReader(base + BACKGROUND_INDEX);
-			prop.load(reader);
-		}catch(FileNotFoundException e){
-			return;
-		}
-		String path = prop.getProperty(BACKGROUND_NAME);
-		if(new File(path).exists())
-			background = GLUtil.loadTexture(path);
 	}
 
 	@Override
@@ -472,12 +497,19 @@ public class ResourceDescriptor extends Descriptor implements Resource{
 		}
 	}
 
+	/**
+	 * 获取资源组前缀（暂未使用）
+	 */
 	public String getPrefix() {
 		return resourceSet.getPrefix();
 	}
 
 	public void setPrefix(String text) {
 		resourceSet.setPrefix(text);
+	}
+	
+	public ResourceSet getUnderlying(){
+		return resourceSet;
 	}
 	
 	

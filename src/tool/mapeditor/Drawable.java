@@ -108,7 +108,7 @@ public interface Drawable {
 	 * Get the editabilites of the operations of the drawable.
 	 * @return
 	 */
-	boolean[] getEditabilities();
+	boolean getEditabilities(Enum<?> i);
 	
 	/**
 	 * Specify the action when the mouse is dragged over the receiver.

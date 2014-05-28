@@ -232,7 +232,12 @@ public class NewResourceDialog extends Dialog {
 		}
 		labelHead.redraw();
 		MainApplication app = MainApplication.getInstance();
-		resource = app.newResourceSet(textGroupName.getText().trim(), importedFiles);
+		String setName = textGroupName.getText().trim();
+		if(app.checkResourceSet(setName) != null){
+			alert = "同名资源组已存在";
+			return;
+		}
+		resource = app.newResourceSet(setName, importedFiles);
 		
 		shell.close();
 	}

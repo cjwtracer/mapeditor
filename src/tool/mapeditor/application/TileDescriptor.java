@@ -74,6 +74,8 @@ public class TileDescriptor extends Descriptor implements Drawable {
 		if(texture != null){
 			GLUtil.drawImage(texture, x, y, width, height, tile.getTrans(), tile.getScale(), tile.getAlphaF());
 		}
+		if(MapDescriptor.isRehearsal)
+			return;
 		float[] c = getColor();
 		if(c != null){
 			GL11.glColor4f(c[0], c[1], c[2], 0.4f);
@@ -157,12 +159,8 @@ public class TileDescriptor extends Descriptor implements Drawable {
 		return b;
 	}
 
-	public boolean[] getEditabilities() {
-		boolean[] bs = new boolean[list.length];
-		for(int i = 0; i < bs.length; ++i){
-			bs[i] = true;
-		}
-		return bs;
+	public boolean getEditabilities(Enum<?> i) {
+		return true;
 	}
 
 	public void onDragOver() {

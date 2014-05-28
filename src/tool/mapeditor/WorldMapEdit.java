@@ -1,8 +1,5 @@
 package tool.mapeditor;
 
-import java.util.List;
-
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 
 /**
@@ -214,9 +211,12 @@ public interface WorldMapEdit {
 	 * @return
 	 */
 	Drawable getOveredDrawable(int x, int y);
-
+	/**
+	 * Get the message to be set to the status bar according to the given information.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	String getStatusLineMessage(int x, int y);
-
-	void getAllDrawables(List drawableList);
 
 }

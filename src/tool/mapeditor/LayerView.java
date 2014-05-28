@@ -8,18 +8,14 @@ import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import tool.mapeditor.actions.NewLayerAction;
@@ -27,6 +23,11 @@ import tool.mapeditor.actions.RemoveLayerAction;
 import tool.resourcemanager.Resources;
 import tool.util.TableItemTextModify;
 
+/**
+ * 地图层面板
+ * @author caijw
+ *
+ */
 public class LayerView extends ViewPart {
 
 	public static final String ID = "mapeditor.LayerView"; //$NON-NLS-1$
@@ -152,7 +153,7 @@ public class LayerView extends ViewPart {
 		item.setChecked(mapEdit.isLayerVisible(pos));
 	}
 
-	public void removeLayer() {
+	void removeLayer() {
 		table.remove(table.getSelectionIndex());
 	}
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="json-lib-2.4-jdk15.jar"/>
+	<classpathentry exported="true" kind="lib" path="resolver.jar"/>
+	<classpathentry exported="true" kind="lib" path="serializer.jar"/>
+	<classpathentry exported="true" kind="lib" path="xercesImpl.jar"/>
+	<classpathentry exported="true" kind="lib" path="xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="MapEditor/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lwjgl_util.jar"/>
+	<classpathentry exported="true" kind="lib" path="transform-3.0.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="newdawn"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

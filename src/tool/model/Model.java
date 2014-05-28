@@ -60,7 +60,7 @@ public abstract class Model implements Parsable, Serializable{
 							p.defaults[i] = defaults[i].split(DEFAULT_SEP);
 					}
 				}
-				proto.put(StringUtil.parseToNumeric(tp), p);
+				proto.put(StringUtil.toNum(tp), p);
 			}
 		}
 	}

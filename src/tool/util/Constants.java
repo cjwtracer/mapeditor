@@ -54,7 +54,7 @@ public class Constants {
 	public final static byte ORIENTATION_EAST = 4;
 	
 	public final static float INTERSECT_FACTOR = 0.2f;
-	public static final long TIME_GAP = 20;
+	public static final long TIME_GAP = 15;
 	public static final String ENCODING = "UTF-8";
 	public static final String SEP = "\\|";
 	

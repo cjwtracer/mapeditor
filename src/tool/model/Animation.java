@@ -37,6 +37,13 @@ public class Animation implements Serializable{
 				}
 			}
 			anim.locus = Locus.load(anim, ois);
+			for(Queue q : anim.animationQueues){
+				for(GradualChange c : q.changes){
+					if(c instanceof PositionChange){
+						((PositionChange)c).locus = anim.locus;
+					}
+				}
+			}
 			ois.close();
 		}catch(ClassNotFoundException e1){
 			throw new DataCrackException(e1);
@@ -72,6 +79,7 @@ public class Animation implements Serializable{
 	 */
 	int id;
 	String name;
+	String framesResource;
 	int x;
 	int y;
 	int width;
@@ -87,6 +95,14 @@ public class Animation implements Serializable{
 	transient ChangeSequence sequence = new ChangeSequence(this);
 	transient Locus locus = new Locus(this);
 	transient List<Queue> animationQueues = new ArrayList<Queue>();
+	
+	public int target = 1;
+	public boolean hasDir;
+	public int layerPos;
+	public int delay;
+	public int actionID;
+	public boolean repeat;
+	public boolean isFly;
 	
 	public int getId() {
 		return id;
@@ -122,8 +138,9 @@ public class Animation implements Serializable{
 		sequence.resetState();
 	}
 	
-	public void extendLocus(){
+	public Locus extendLocus(){
 		locus.addCurve(x, y, step);
+		return locus;
 	}
 
 	public Locus getLocus() {
@@ -131,6 +148,8 @@ public class Animation implements Serializable{
 	}
 	
 	public List<GradualChange> getChanges(){
+		if(sequence == null)
+			sequence = new ChangeSequence(this);
 		return sequence.changes;
 	}
 	
@@ -307,5 +326,15 @@ public class Animation implements Serializable{
 				}
 			}
 		}
+	}
+
+	public String getFramesResource() {
+		if(framesResource == null)
+			framesResource = "";
+		return framesResource;
+	}
+	
+	public void setFramesResource(String resDir){
+		framesResource = resDir;
 	}
 }

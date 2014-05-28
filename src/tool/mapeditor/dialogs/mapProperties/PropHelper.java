@@ -23,7 +23,7 @@ class PropHelper {
 		for(String t : types){
 			if(!StringUtil.isNumeric(t))
 				throw new IllegalArgumentException("invalid type");
-			typeList[i++] = StringUtil.parseToNumeric(t);
+			typeList[i++] = StringUtil.toNum(t);
 		}
 	}
 }

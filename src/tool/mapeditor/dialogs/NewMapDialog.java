@@ -21,6 +21,7 @@ import tool.mapeditor.application.MapDescriptor;
 import tool.mapeditor.application.MapProject;
 import tool.model.WorldMap;
 import tool.resourcemanager.Resources;
+import tool.util.StringUtil;
 import tool.util.WidgetUtil;
 
 public class NewMapDialog extends Dialog {
@@ -197,7 +198,7 @@ public class NewMapDialog extends Dialog {
 		textTileWidth.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				if(textTileHeight.getData() == null || textTileHeight.getData().toString().isEmpty()) {		
-					int h = WidgetUtil.getIntValue(textTileWidth);
+					int h = StringUtil.toNum(textTileWidth.getText());
 					if(radioIsometric.getSelection()){
 						h = h / 2;
 					}
@@ -268,12 +269,12 @@ public class NewMapDialog extends Dialog {
 		String mapName = textMapName.getText().trim();
 		int width = -1, height = -1, cellW = -1, cellH = -1, tw = -1, th = -1;
 		try{
-			width = WidgetUtil.getIntValue(textMapWidth);
-			height = WidgetUtil.getIntValue(textMapHeight);
-			cellW = WidgetUtil.getIntValue(txtCellW);
-			cellH = WidgetUtil.getIntValue(txtCellH);
-			tw = WidgetUtil.getIntValue(textTileWidth);
-			th = WidgetUtil.getIntValue(textTileHeight);
+			width = StringUtil.toNum(textMapWidth.getText());
+			height = StringUtil.toNum(textMapHeight.getText());
+			cellW = StringUtil.toNum(txtCellW.getText());
+			cellH = StringUtil.toNum(txtCellH.getText());
+			tw = StringUtil.toNum(textTileWidth.getText());
+			th = StringUtil.toNum(textTileHeight.getText());
 		}catch(NumberFormatException ex){
 			showError();
 			return;

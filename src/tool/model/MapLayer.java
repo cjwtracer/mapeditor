@@ -59,6 +59,13 @@ public class MapLayer extends Model{
 			if(u.animation != null){
 				u.animation.update();
 			}
+			if(u instanceof UnitGroup){
+				UnitGroup ug = (UnitGroup)u;
+				for(Unit cell : ug.getComponents()){
+					if(cell.animation != null)
+						cell.animation.update();
+				}
+			}
 		}
 	}
 
@@ -66,6 +73,13 @@ public class MapLayer extends Model{
 		for(Unit u : units){
 			if(u.animation != null)
 				u.animation.init();
+			if(u instanceof UnitGroup){
+				UnitGroup ug = (UnitGroup)u;
+				for(Unit cell : ug.getComponents()){
+					if(cell.animation != null)
+						cell.animation.init();
+				}
+			}
 		}
 	}
 
@@ -73,6 +87,13 @@ public class MapLayer extends Model{
 		for(Unit u : units){
 			if(u.animation != null)
 				u.animation.reset();
+			if(u instanceof UnitGroup){
+				UnitGroup ug = (UnitGroup)u;
+				for(Unit cell : ug.getComponents()){
+					if(cell.animation != null)
+						cell.animation.reset();
+				}
+			}
 		}
 	}
 

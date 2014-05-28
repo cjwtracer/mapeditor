@@ -19,11 +19,10 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
-
-import tool.account.Login;
 import tool.io.Configuration;
 import tool.io.DataCrackException;
 import tool.io.ProjectReader;
@@ -33,11 +32,14 @@ import tool.mapeditor.Application;
 import tool.mapeditor.Drawable;
 import tool.mapeditor.LayerView;
 import tool.mapeditor.MapView;
+import tool.mapeditor.ProgressDialog;
 import tool.mapeditor.ResourceView;
 import tool.mapeditor.WindowsHarbor;
 import tool.mapeditor.WorldMapEdit;
+import tool.mapeditor.application.MapDescriptor.LayerDescriptor;
 import tool.mapeditor.dialogs.ChangePropertyDialog;
 import tool.mapeditor.dialogs.LocusPropertyDialog;
+import tool.mapeditor.dialogs.UnitGroupDialog;
 import tool.mapeditor.dialogs.UnitPropertyDialog;
 import tool.mapeditor.dialogs.mapProperties.MapPropertyDialog;
 import tool.mapeditor.dialogs.mapProperties.PropertyEditDialog;
@@ -48,6 +50,7 @@ import tool.model.RegionPolygon;
 import tool.model.ResourceSet;
 import tool.model.Tile;
 import tool.model.Unit;
+import tool.model.UnitGroup;
 import tool.model.WorldMap;
 import tool.mapeditor.dialogs.ConfirmDialog;
 import tool.resourcemanager.SWTResourceManager;
@@ -119,6 +122,16 @@ public class MainApplication {
 				res.setVersion(version.currentVersion());
 				ResourceSet.ResourceIO.loadResourceSet(project, res);
 			}
+			for(WorldMap m : project.getMapGroup().values()){//TODO
+				if(m.getImageWidth() == 0){
+					ImageData data = new ImageData(project.getMapDir() + m.getBackground());
+					m.setImageWidth(data.width);
+					m.setImageHeight(data.height);
+				}
+			}
+			for(Animation a : project.getAnimationGroup().values()){
+				Animation.load(project.getAnimDir() + a.getId() + Project.ANIM_EXT, a);
+			}
 		}catch(FileNotFoundException ex){
 			System.err.println("Workspace does not exist!\n" + ex);
 			createWorkspace(configuration.getWorkspacePath());
@@ -170,6 +183,19 @@ public class MainApplication {
 		version = new Version();
 		version.sycVersion();
 		version.save();
+		
+		String fromPath = new File(FileUtil.getCurrentDirectory()).getParentFile().getParent();
+		fromPath = new StringBuffer(fromPath).append(File.separator).append(MapProject.CONFIG_DIR).toString();
+		String configDir = project.getConfigDir();
+		for(File cf : new File(fromPath).listFiles(new FileFilter(){
+			public boolean accept(File f) {
+				return true;
+			}
+		})){
+			String toDir = FileUtil.checkPath(configDir);
+			String to = new StringBuffer(toDir).append(File.separator).append(cf.getName()).toString();
+			FileUtil.copyFile(cf.getAbsolutePath(), to);
+		}
 	}
 	
 	public MapProject getProject(){
@@ -271,6 +297,13 @@ public class MainApplication {
 				FileUtil.deleteFile(tmpf);
 				if(m != getCurrentMap().worldMap)
 					m.dirty = false;
+			}
+		}
+		for(Animation a : project.getAnimationGroup().values()){
+			try {
+				Animation.save(project.getAnimDir() + a.getId() + Project.ANIM_EXT, a);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		if(ok){
@@ -503,14 +536,21 @@ public class MainApplication {
 	 * Export the datas according to the requirements.
 	 */
 	public void exportMapDatas(){
-		try {
-			for(WorldMap m : project.getMapGroup().values()){
-				DataWriter.exportMapDatas(m, project);
+		ProgressDialog dlg = new ProgressDialog(windowsHarbor.getShell(), project.getMapGroup().size(), "正在导出"){
+			public void runTask(){
+				int i = 0;
+				try {
+					for (WorldMap m : project.getMapGroup().values()) {
+						DataWriter.exportMapDatas(m, project);
+						this.setStep(i++);
+					}
+					this.finish();
+				} catch (DataCrackException e) {
+					e.printStackTrace();
+				}
 			}
-		} catch (DataCrackException e) {
-			alert("exportMap failed");
-			e.printStackTrace();
-		}
+		};
+		dlg.open();
 	}
 
 	/**
@@ -531,6 +571,8 @@ public class MainApplication {
 		String ext = img.substring(img.lastIndexOf("."));
 		if(md != null){
 			md.background = GLUtil.loadTexture(img);
+			md.worldMap.setImageWidth(md.background.getImageWidth());
+			md.worldMap.setImageHeight(md.background.getImageHeight());
 			md.worldMap.setBackground(md.getMapFileId() + WorldMap.BACKGROUND_EXT + ext);
 			int lastIdx = fileName.lastIndexOf(".");
 			md.worldMap.setBackgroundID(Integer.valueOf(fileName.substring(0, lastIdx == -1 ? fileName.length() : lastIdx)));
@@ -552,12 +594,12 @@ public class MainApplication {
 		}else{
 			md.resetAnimations();
 		}
+		MapDescriptor.isRehearsal = isPlay;
 		windowsHarbor.redrawMap();
 	}
 	
 	void showChangePropertyDialog(AnimationDescriptor anim){
-		Shell sh = windowsHarbor.getShell();
-		ChangePropertyDialog dlg = new ChangePropertyDialog(sh, anim);
+		ChangePropertyDialog dlg = new ChangePropertyDialog(windowsHarbor.getShell(), anim);
 		dlg.open();
 	}
 
@@ -619,6 +661,10 @@ public class MainApplication {
 		}
 	}
 	
+	/**
+	 * 获取当前显示的地图的引用
+	 * @return
+	 */
 	public MapDescriptor getCurrentMap(){
 		if(windowsHarbor == null)
 			return null;
@@ -760,12 +806,12 @@ public class MainApplication {
 
 	public void resetMapExpID(int id) {
 		MapDescriptor md = getCurrentMap();
-		windowsHarbor.setMapTitle(md.getMapName() + " [" + id + "]");
+		windowsHarbor.findMapView().setMapTitle(md.getMapName() + " [" + id + "]");
 	}
 
 	public void resetMapName(String name) {
 		MapDescriptor md = getCurrentMap();
-		windowsHarbor.setMapTitle(name + " [" + md.getMapID() + "]");
+		windowsHarbor.findMapView().setMapTitle(name + " [" + md.getMapID() + "]");
 	}
 
 	public void verify() {
@@ -838,6 +884,10 @@ public class MainApplication {
 		}
 	}
 
+	/**
+	 * 将指定地图设置并显示到编辑器中
+	 * @param map
+	 */
 	public void showMap(WorldMap map) {
 		if(map == null)
 			return;
@@ -851,6 +901,11 @@ public class MainApplication {
 		showFullViews(MapDescriptor.getDescriptor(map));
 	}
 	
+	/**
+	 * 弹出选择对话框
+	 * @param msg
+	 * @return
+	 */
 	public boolean confirm(String msg){
 		ConfirmDialog dlg = new ConfirmDialog(windowsHarbor.getShell(), msg);
 		return dlg.open();
@@ -887,6 +942,12 @@ public class MainApplication {
 		return windowsHarbor.getWorkbenchWindow();
 	}
 
+	/**
+	 * 以指定的名称和图片生成一个新资源组
+	 * @param setName
+	 * @param importedFiles
+	 * @return
+	 */
 	public ResourceDescriptor newResourceSet(String setName, Map<String, File> importedFiles) {
 		int s = importedFiles.size();
 		String[] names = new String[s];
@@ -914,6 +975,63 @@ public class MainApplication {
 		resource.setResourceItems(imgs);
 		
 		return resource;
+	}
+	
+	/**
+	 * 当数据有错误时，用于更新数据，方法内容根据具体情况修改
+	 */
+	public void refreshDatas(){
+		ProgressDialog dlg = new ProgressDialog(windowsHarbor.getShell(), project.getMapGroup().size(), "正在导出"){
+			public void runTask() {
+				int i = 0;
+				try {
+					for (WorldMap m : project.getMapGroup().values()) {
+						boolean b = MapDescriptor.stack.containsKey(m.getFileID());
+						MapDescriptor md = b ? MapDescriptor.getDescriptor(m) : new MapDescriptor(m);
+						for(MapDescriptor.LayerDescriptor ld : md.layers){
+							for(RegionDescriptor rd : ld.regions){
+								rd.mappingRegion(true, m.getTileWidth(), m.getTileHeight());
+							}
+						}
+						WorldMap.save(project, m);
+						this.setStep(i++);
+					}
+					this.finish();
+				} catch (DataCrackException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		dlg.open();
+		windowsHarbor.redrawMap();
+	}
+
+	public ResourceSet checkResourceSet(String setName) {
+		for(ResourceSet set : project.getResourceGroup().values()){
+			if(set.getName().equals(setName))
+				return set;
+		}
+		return null;
+	}
+
+	public void addAnimGroupToMap(UnitGroup unitGroup) {
+		MapDescriptor md = getCurrentMap();
+		if(unitGroup == null || md == null)
+			return;
+		LayerDescriptor ld = md.getLayer(md.getCurrentLayerIndex());
+		UnitGroupDescriptor ugd = new UnitGroupDescriptor(unitGroup.getCopy(ld.layer), ld);
+		ugd.unitGroup.protoID = unitGroup.getId();
+		Point off = windowsHarbor.findMapView().getMapCanvasOffset();
+		unitGroup.setX(off.x);
+		unitGroup.setY(off.y);
+		ld.layer.getUnits().add(ugd.unitGroup);
+		ld.units.add(ugd);
+	}
+
+	public void showUnitGroupDialog(int proto) {
+		UnitGroup unitGroup = project.getUnitsGroup().get(proto);
+		UnitGroupDialog dlg = new UnitGroupDialog(windowsHarbor.getShell(), unitGroup);
+		dlg.open();
 	}
 	
 }

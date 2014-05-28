@@ -14,11 +14,13 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
 import tool.mapeditor.actions.ExitAction;
+import tool.mapeditor.actions.ExportAnimationAction;
 import tool.mapeditor.actions.ExportDataAction;
 import tool.mapeditor.actions.ExportMapAction;
 import tool.mapeditor.actions.ExportNPCAction;
 import tool.mapeditor.actions.GridAlignAction;
 import tool.mapeditor.actions.ImageSpliteAction;
+import tool.mapeditor.actions.ImportAnimationAction;
 import tool.mapeditor.actions.ImportMapAction;
 import tool.mapeditor.actions.ImportNPCModelAction;
 import tool.mapeditor.actions.MergeNPCAction;
@@ -28,6 +30,7 @@ import tool.mapeditor.actions.NewResourceAction;
 import tool.mapeditor.actions.OpenAction;
 import tool.mapeditor.actions.OpenExportFileFolderAction;
 import tool.mapeditor.actions.PropertyAction;
+import tool.mapeditor.actions.RefreshMapAction;
 import tool.mapeditor.actions.SaveAction;
 import tool.mapeditor.actions.MovableAction;
 import tool.resourcemanager.ResourceManager;
@@ -60,6 +63,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	Action exportMapAction;
 	Action importMapAction;
 	Action metadataAction;
+	Action refreshMapDataAction;
+	Action importAnimationAction;
+	Action exportAnimationAction;
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -96,6 +102,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		register(exportMapAction);
 		metadataAction = new MetadataAction(window);
 		register(metadataAction);
+		refreshMapDataAction = new RefreshMapAction();
+		importAnimationAction = new ImportAnimationAction(window);
+		register(importAnimationAction);
+		exportAnimationAction = new ExportAnimationAction();
+		register(exportAnimationAction);
 //		newResourceAction = new NewResourceAction(window);
 //		register(newResourceAction);
 	}
@@ -110,6 +121,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(exportDataAction);
 		fileMenu.add(exportNPCAction);
 		fileMenu.add(mergeNPCAction);
+		fileMenu.add(exportAnimationAction);
 		fileMenu.add(new Separator());
 		fileMenu.add(exitAction);
 		MenuManager editMenu = new MenuManager("编辑(&E)", "edit");
@@ -120,13 +132,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		viewMenu.add(new Action("view"){});
 		MenuManager mapMenu = new MenuManager("地图(&M)", "map");
 		menuBar.add(mapMenu);
-		mapMenu.add(new Action("map"){});
+		mapMenu.add(importAnimationAction);
 		MenuManager layerMenu = new MenuManager("图层(&L)", "layer");
 		menuBar.add(layerMenu);
 		layerMenu.add(new Action("layer"){});
 		MenuManager toolMenu = new MenuManager("工具(&T)", "tool");
 		menuBar.add(toolMenu);
 		toolMenu.add(imageSpliteAction);
+		toolMenu.add(new Separator());
 		toolMenu.add(openExportFolderAction);
 	}
 	
@@ -143,6 +156,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolbar.add(new Separator());
 		toolbar.add(importMapAction);
 		toolbar.add(exportMapAction);
+		
+		toolbar.add(new Separator());
+		toolbar.add(refreshMapDataAction);
 	}
 
 }

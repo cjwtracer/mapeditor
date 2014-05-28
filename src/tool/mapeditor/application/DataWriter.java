@@ -23,6 +23,7 @@ import tool.model.RegionPolygon;
 import tool.model.ResourceSet;
 import tool.model.Tile;
 import tool.model.Unit;
+import tool.model.UnitGroup;
 import tool.model.WorldMap;
 import tool.util.FileUtil;
 import tool.util.MathUtil;
@@ -110,6 +111,9 @@ public class DataWriter {
 				pw.println("camp");
 				pw.println(-1);
 			}
+			if(m.getWidth() == 0 || m.getHeight() == 0){
+				System.err.println(m.getName() + m.getFileID());
+			}
 			dos.writeShort(m.getWidth());
 			pw.println("map w");
 			pw.println(m.getWidth());
@@ -128,10 +132,10 @@ public class DataWriter {
 			dos.writeByte(m.getTileWidth());
 			pw.println("tile w");
 			pw.println(m.getTileWidth());
-			//TODO
+			
 			MapLayer l = m.getLayers().get(0);
 			int count = 0;
-			for(int i = 0, len = l.getTilesCount(); i < len; ++i){//FIXME
+			for(int i = 0, len = l.getTilesCount(); i < len; ++i){
 				int tp = l.getTile(i).getType();
 				if(tp == RegionPolygon.TYPE_NONE)
 					tp = 1;
@@ -337,6 +341,27 @@ public class DataWriter {
 					}
 				}
 			}
+			//TODO effect
+//			count = 0;
+//			for(Unit u : l.getUnits()){
+//				if(u instanceof UnitGroup){
+//					count++;
+//				}
+//			}
+//			dos.writeInt(count);
+//			pw.println("effects count");
+//			pw.println(count);
+//			for(Unit u : l.getUnits()){
+//				if(u instanceof UnitGroup){
+//					dos.writeShort((short)u.getX());
+//					pw.println("ej");
+//					pw.println(u.getX());
+//					dos.writeShort((short)u.getY());
+//					pw.println("ei");
+//					pw.println(u.getY());
+//				}
+//			}
+			
 			dos.close();
 			pw.flush();
 			pw.close();

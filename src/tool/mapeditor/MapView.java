@@ -11,6 +11,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -18,6 +19,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 
+import tool.mapeditor.actions.AddAnimGroupAction;
 import tool.mapeditor.actions.MapBackgroundAction;
 import tool.mapeditor.actions.MapPropertyAction;
 import tool.mapeditor.actions.MappingRegionAction;
@@ -31,6 +33,11 @@ import tool.resourcemanager.Resources;
 import tool.util.Constants;
 import tool.util.WidgetUtil;
 
+/**
+ * 地图面板（主面板）
+ * @author caijw
+ *
+ */
 public class MapView extends ViewPart {
 	public static final String ID = "mapeditor.MapView";
 	
@@ -43,6 +50,7 @@ public class MapView extends ViewPart {
 	MapBackgroundAction mapBackgroundAction;
 	PlayAnimationAction playAnimationAction;
 	MapPropertyAction mapPropertyAction;
+	AddAnimGroupAction addAnimGroupAction;
 	
 	IStatusLineManager statusLine;
 	
@@ -130,6 +138,7 @@ public class MapView extends ViewPart {
 		mapBackgroundAction = new MapBackgroundAction(window);
 		playAnimationAction = new PlayAnimationAction();
 		mapPropertyAction = new MapPropertyAction();
+		addAnimGroupAction = new AddAnimGroupAction(window);
 	}
 
 	/**
@@ -150,6 +159,7 @@ public class MapView extends ViewPart {
 		toolbarManager.add(mapBackgroundAction);
 		toolbarManager.add(mapPropertyAction);
 		toolbarManager.add(new Separator());
+		toolbarManager.add(addAnimGroupAction);
 		toolbarManager.add(playAnimationAction);
 		toolbarManager.add(new Separator());
 	}
@@ -165,6 +175,10 @@ public class MapView extends ViewPart {
 	public void setFocus() {
 	}
 	
+	/**
+	 * 将面板标题设置为指定的名称
+	 * @param title
+	 */
 	public void setMapTitle(String title){
 		setPartName(title);
 	}
@@ -213,18 +227,17 @@ public class MapView extends ViewPart {
 		if(d != null){
 			Enum<?>[] list = d.getOperationList();
 			if(list != null){
-				boolean[] editabilities = d.getEditabilities();
 				for(MenuItem item : popupMenu.getItems()){
 					item.dispose();
 				}
 				int idx = 0;
 				for(final Enum<?> oper : list){
-					if(oper.equals("")){
+					if(oper.ordinal() == 0){
 						new MenuItem(popupMenu, SWT.SEPARATOR);
 					}else{
 						MenuItem item = new MenuItem(popupMenu, SWT.PUSH);
 						item.setText(oper.name());
-						item.setEnabled(editabilities[idx]);
+						item.setEnabled(d.getEditabilities(oper));
 						item.addSelectionListener(new SelectionAdapter(){
 							public void widgetSelected(SelectionEvent e){
 								if(d.operate(oper)){
@@ -233,10 +246,15 @@ public class MapView extends ViewPart {
 							}
 						});
 					}
+					idx++;
 				}
 				popupMenu.setVisible(true);
 			}
 		}
+	}
+	
+	public Point getMapCanvasOffset(){
+		return new Point(canvas.origin.x, canvas.origin.y);
 	}
 
 }

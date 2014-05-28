@@ -93,7 +93,7 @@ public class FixedPropsPanel extends Composite {
 		switch(index){
 		case 0:
 			if(StringUtil.isNumeric(newText)){
-				int id = StringUtil.parseToNumeric(newText);
+				int id = StringUtil.toNum(newText);
 				for(WorldMap m : app.getProject().getMapGroup().values()){
 					if(m == map)
 						continue;
@@ -114,21 +114,21 @@ public class FixedPropsPanel extends Composite {
 			break;
 		case 2:
 			if(StringUtil.isNumeric(newText)){
-				map.setBackgroundID(StringUtil.parseToNumeric(newText));
+				map.setBackgroundID(StringUtil.toNum(newText));
 			}else{
 				b = false;
 			}
 			break;
 		case 3:
 			if(StringUtil.isNumeric(newText)){
-				map.setCellWidth(StringUtil.parseToNumeric(newText));
+				map.setCellWidth(StringUtil.toNum(newText));
 			}else{
 				b = false;
 			}
 			break;
 		case 4:
 			if(StringUtil.isNumeric(newText)){
-				map.setCellHeight(StringUtil.parseToNumeric(newText));
+				map.setCellHeight(StringUtil.toNum(newText));
 			}else{
 				b = false;
 			}

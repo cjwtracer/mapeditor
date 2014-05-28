@@ -21,11 +21,17 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		return PERSPECTIVE_ID;
 	}
 	
+	/**
+	 * 处理程序抛出的异常
+	 */
 	public void eventLoopException(Throwable e){
 		super.eventLoopException(e);
 		e.printStackTrace();
 	}
 	
+	/**
+	 * 程序初始化设置
+	 */
 	public void initialize(IWorkbenchConfigurer configurer){
 		super.initialize(configurer);
 		configurer.setSaveAndRestore(true);

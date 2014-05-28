@@ -34,6 +34,7 @@ import tool.util.Constants;
 import tool.util.WidgetUtil;
 
 public class ChangePropertyDialog extends Dialog {
+	MainApplication app = MainApplication.getInstance();
 	
 	protected Queue result;
 	protected Shell shell;
@@ -243,8 +244,10 @@ public class ChangePropertyDialog extends Dialog {
 
 	void add(Queue queue, byte type) {
 		if(type == GradualChange.CHANGE_FRAME)
-			if(animDes.getFrames() != null)
+			if(animDes.getFrames() != null){
+				app.alert("only one frame change can be added into an animation");
 				return;
+			}
 		GradualChange cg = queue.addChange(type);
 		rebuildTree();
 		Composite panel = null;
@@ -314,7 +317,7 @@ public class ChangePropertyDialog extends Dialog {
 			tabItem.setControl(panel);
 			tabItem.setText(change.getText());
 		}else{
-			MainApplication.getInstance().alert("invalid change type");
+			app.alert("invalid change type");
 		}
 	}
 	

@@ -42,4 +42,9 @@ public interface ICommands {
 	public static final String CMD_ADD_RESOURCE = "add.resource";
 	public static final String CMD_RES_PROPERTY = "resource.property";
 	public static final String CMD_RESOURCEVIEW_RESIZE = "resourceview.resize";
+	public static final String CMD_SCALE_MAP_BG = "scale.map.bg";
+	public static final String CMD_REFRESH_MAP = "refresh.map";
+	public static final String CMD_IMPORT_ANIM = "import.anim";
+	public static final String CMD_ADD_ANIM_GROUP = "add.anim.group";
+	public static final String CMD_EXPORT_ANIM = "export.animations";
 }

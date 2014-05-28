@@ -13,7 +13,7 @@ public class PositionChange extends GradualChange{
 	PositionChange(ChangeSequence sequence){
 		this.sequence = sequence;
 		type = GradualChange.CHANGE_POSITION;
-		locus = sequence.animation.locus;
+		locus = sequence.animation.getLocus();
 	}
 	
 	public boolean isRepeat(){

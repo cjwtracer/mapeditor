@@ -19,7 +19,7 @@ import tool.util.Log;
 
 public class FileUtil {
 	/**
-	 * With the file separator.
+	 * Get the directory within which the executing package is. With the file separator.
 	 * @return
 	 */
 	public static String getCurrentDirectory() {
@@ -134,6 +134,12 @@ public class FileUtil {
 			file.delete();
 	}
 	
+	/**
+	 * Remove the the given directory and all its files, but it will not do it
+	 * recursively, so the directory must not contains sub directories.
+	 * 
+	 * @param directory
+	 */
 	public static void removeDirectory(String directory) {
 		File dir = new File(directory);
 		File[] files = dir.listFiles();
@@ -143,6 +149,11 @@ public class FileUtil {
 		dir.delete();
 	}
 	
+	/**
+	 * Read a file into a byte array.
+	 * @param inputFile
+	 * @return
+	 */
 	public static byte[] readFile(String inputFile) {
 		byte[] data = null;
 		FileInputStream is = null;
@@ -190,6 +201,12 @@ public class FileUtil {
 		}
 	}
 	
+	/**
+	 * Get the file with the given extension name.
+	 * @param dirPath
+	 * @param extension
+	 * @return
+	 */
 	public static File[] listFiles(String dirPath, final String extension) {
 		File dir = new File(dirPath);
 		if (!dir.exists()) return null;
@@ -289,6 +306,11 @@ public class FileUtil {
 		return index;
 	}
 	
+	/**
+	 * Get the file name from the given absolute file path.
+	 * @param path
+	 * @return
+	 */
 	public static String pathToName(String path){
 		if(path == null || path.isEmpty()) return "";
 		
@@ -338,12 +360,22 @@ public class FileUtil {
 		return result;
 	}
 	
+	/**
+	 * Remove the extension part of the file name.
+	 * @param fileName
+	 * @return
+	 */
 	public static String removeExtension(String fileName){
 		if(!isNumericFileName(fileName)) return null;
 		if(fileName.lastIndexOf(".") < 0) return fileName;
 		return fileName.substring(0, fileName.lastIndexOf("."));
 	}
 	
+	/**
+	 * Check the existance of the given path, if not, create it.
+	 * @param path
+	 * @return
+	 */
 	public static String checkPath(String path){
 		if(path != null){
 			File f = new File(path);
@@ -353,14 +385,11 @@ public class FileUtil {
 		return path;
 	}
 	
-	public static boolean hasInvalidFile(File[] files){
-		for(File f : files){
-			if(!FileUtil.isNumericFileName(f.getName()))
-				return true;
-		}
-		return false;
-	}
-	
+	/**
+	 * Utility method of loading a property from a file.
+	 * @param prop
+	 * @param filename
+	 */
 	public static void loadProperties(Properties prop, String filename){
 		if(prop == null || filename == null)
 			throw new IllegalArgumentException();
@@ -377,6 +406,12 @@ public class FileUtil {
 		}
 	}
 
+	/**
+	 * Utility method of writing a property into a file.
+	 * @param p
+	 * @param fileName
+	 * @throws IOException
+	 */
 	public static void saveProperties(Properties p, String fileName) throws IOException {
 		if(p == null || fileName == null){
 			System.err.println("null args");
@@ -393,6 +428,20 @@ public class FileUtil {
 		}finally{
 			if(fos != null)try {fos.close();} catch (IOException e) {}
 		}
+	}
+	
+	/**
+	 * Get the last file separator of the given absolute file name.
+	 * @param absFileName
+	 * @return
+	 */
+	public static int lastSeparator(String absFileName){
+		if(absFileName == null)
+			return -1;
+		int i = absFileName.lastIndexOf(File.separator);
+		if(i < 0)
+			i = absFileName.lastIndexOf("/");
+		return i;
 	}
 	
 	public static void main(String[] args) {

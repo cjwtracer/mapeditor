@@ -183,6 +183,26 @@
                description="Resize the displaying image in the resource view"
                id="resourceview.resize">
       </command>
+      <command name="Scale map background"
+               description="Scale map background"
+               id="scale.map.bg">
+      </command>
+      <command name="Refresh map datas"
+               description="Refresh map datas"
+               id="refresh.map">
+      </command>
+      <command name="Import animations"
+               description="Import animations"
+               id="import.anim">
+      </command>
+      <command name="Import animations"
+               description="Import animations"
+               id="add.anim.group">
+      </command>
+      <command name="Export animations"
+               description="Export animations"
+               id="export.animations">
+      </command>
      </extension>
    <extension
          id="product"

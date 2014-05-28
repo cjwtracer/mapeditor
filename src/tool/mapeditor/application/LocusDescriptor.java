@@ -58,6 +58,10 @@ public class LocusDescriptor implements Drawable {
 	}
 
 	public void paint(Graphics graphics, int x, int y, int width, int height, float trans) {
+		if(MapDescriptor.isRehearsal)
+			return;
+		if(locus == null)
+			return;
 		graphics.translate(x, y);
 		for(Curve c : locus.getCurves()){
 			graphics.setColor(Color.blue);
@@ -89,40 +93,42 @@ public class LocusDescriptor implements Drawable {
 		int i = 0;
 		firedMarkerBounds.width = Locus.MARKER_SIZE;
 		firedMarkerBounds.height = Locus.MARKER_SIZE;
-		for(Curve c : locus.getCurves()){
-			curveIndex = i;
-			Vector2f p2 = c.getEndPoint();
-			if(p2.x - halfSize < x && p2.x + halfSize > x && p2.y - halfSize < y && p2.y + halfSize > y){
-				firedVertex = p2;
-				vertexIndex = Locus.VER_END;
-				firedMarkerBounds.x = (int)(p2.x - halfSize);
-				firedMarkerBounds.y = (int)(p2.y - halfSize);
-				return true;
+		if(locus != null){
+			for(Curve c : locus.getCurves()){
+				curveIndex = i;
+				Vector2f p2 = c.getEndPoint();
+				if(p2.x - halfSize < x && p2.x + halfSize > x && p2.y - halfSize < y && p2.y + halfSize > y){
+					firedVertex = p2;
+					vertexIndex = Locus.VER_END;
+					firedMarkerBounds.x = (int)(p2.x - halfSize);
+					firedMarkerBounds.y = (int)(p2.y - halfSize);
+					return true;
+				}
+				Vector2f c1 = c.getControlFirst();
+				if(c1.x - halfSize < x && c1.x + halfSize > x && c1.y - halfSize < y && c1.y + halfSize > y){
+					firedVertex = c1;
+					firedMarkerBounds.x = (int)(c1.x - halfSize);
+					firedMarkerBounds.y = (int)(c1.y - halfSize);
+					return true;
+				}
+				Vector2f c2 = c.getControlSecond();
+				if(c2.x - halfSize < x && c2.x + halfSize > x && c2.y - halfSize < y && c2.y + halfSize > y){
+					firedVertex = c2;
+					vertexIndex = Locus.VER_CTRL2;
+					firedMarkerBounds.x = (int)(c2.x - halfSize);
+					firedMarkerBounds.y = (int)(c2.y - halfSize);
+					return true;
+				}
+				Vector2f p1 = c.getStartPoint();
+				if(p1.x - halfSize < x && p1.x + halfSize > x && p1.y - halfSize < y && p1.y + halfSize > y){
+					firedVertex = p1;
+					vertexIndex = Locus.VER_START;
+					firedMarkerBounds.x = (int)(p1.x - halfSize);
+					firedMarkerBounds.y = (int)(p1.y - halfSize);
+					return true;
+				}
+				++i;
 			}
-			Vector2f c1 = c.getControlFirst();
-			if(c1.x - halfSize < x && c1.x + halfSize > x && c1.y - halfSize < y && c1.y + halfSize > y){
-				firedVertex = c1;
-				firedMarkerBounds.x = (int)(c1.x - halfSize);
-				firedMarkerBounds.y = (int)(c1.y - halfSize);
-				return true;
-			}
-			Vector2f c2 = c.getControlSecond();
-			if(c2.x - halfSize < x && c2.x + halfSize > x && c2.y - halfSize < y && c2.y + halfSize > y){
-				firedVertex = c2;
-				vertexIndex = Locus.VER_CTRL2;
-				firedMarkerBounds.x = (int)(c2.x - halfSize);
-				firedMarkerBounds.y = (int)(c2.y - halfSize);
-				return true;
-			}
-			Vector2f p1 = c.getStartPoint();
-			if(p1.x - halfSize < x && p1.x + halfSize > x && p1.y - halfSize < y && p1.y + halfSize > y){
-				firedVertex = p1;
-				vertexIndex = Locus.VER_START;
-				firedMarkerBounds.x = (int)(p1.x - halfSize);
-				firedMarkerBounds.y = (int)(p1.y - halfSize);
-				return true;
-			}
-			++i;
 		}
 		firedVertex = null;
 		vertexIndex = -1;
@@ -149,10 +155,8 @@ public class LocusDescriptor implements Drawable {
 		return b;
 	}
 
-	public boolean[] getEditabilities() {
-		boolean[] bs = new boolean[list.length];
-		bs[0] = true;
-		return bs;
+	public boolean getEditabilities(Enum<?> i) {
+		return true;
 	}
 
 	@Override

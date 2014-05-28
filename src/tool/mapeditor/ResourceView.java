@@ -3,7 +3,6 @@ package tool.mapeditor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
@@ -29,14 +28,18 @@ import tool.mapeditor.actions.DeleteSourceAction;
 import tool.mapeditor.actions.NewResourceAction;
 import tool.mapeditor.actions.ResourcePrefixAction;
 import tool.mapeditor.actions.ResourceViewResizeAction;
-import tool.mapeditor.application.ResourceDescriptor;
 import tool.resourcemanager.Resources;
 import tool.util.WidgetUtil;
 
+/**
+ * 资源面板
+ * @author caijw
+ *
+ */
 public class ResourceView extends ViewPart {
 
 	public static final String ID = "mapeditor.SourceView"; //$NON-NLS-1$
-static final int COLUMN_NUM = 3;
+	static final int COLUMN_NUM = 3;
 	
 	Combo resourceList;
 	List<Resource> resources = new ArrayList<Resource>();
@@ -164,12 +167,20 @@ static final int COLUMN_NUM = 3;
 		// Set the focus
 	}
 	
+	/**
+	 * 添加指定资源到面板
+	 * @param resource
+	 */
 	public void addResource(Resource resource){
 		resourceList.add(resource.getName());
 		resources.add(resource);
 		setResource(resource);
 	}
 	
+	/**
+	 * 设置指定资源到面板
+	 * @param resource
+	 */
 	public void setResource(Resource resource){
 		resourceSet = resource;
 		for(Control c : resourcePanel.getChildren())
@@ -253,6 +264,10 @@ static final int COLUMN_NUM = 3;
 		popupMenu.setVisible(true);
 	}
 	
+	/**
+	 * 设置是否适应面板大小显示所有图片
+	 * @param adaptToContainer
+	 */
 	public void resizePanel(boolean adaptToContainer){
 		if(this.adaptToContainer == adaptToContainer)
 			return;

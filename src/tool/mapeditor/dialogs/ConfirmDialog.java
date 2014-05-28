@@ -72,7 +72,7 @@ public class ConfirmDialog extends Dialog {
 		
 		Button btnOK = new Button(composite, SWT.NONE);
 		btnOK.setBounds(228, 13, 80, 27);
-		btnOK.setText("确定");
+		btnOK.setText("是");
 		btnOK.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
 				result = true;
@@ -82,7 +82,7 @@ public class ConfirmDialog extends Dialog {
 		
 		Button btnCancel = new Button(composite, SWT.NONE);
 		btnCancel.setBounds(344, 13, 80, 27);
-		btnCancel.setText("取消");
+		btnCancel.setText("否");
 		btnCancel.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
 				result = false;

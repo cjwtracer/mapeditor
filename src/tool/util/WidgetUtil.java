@@ -3,6 +3,7 @@ package tool.util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
@@ -12,11 +13,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 public class WidgetUtil {
 	
+	/**
+	 * Set the location of the given shell to the center of the screen.
+	 * @param shell
+	 */
 	public static void layoutCenter(Shell shell) {
 		Display display = Display.getDefault();
 		Rectangle rectScreen = display.getBounds();
@@ -27,6 +31,10 @@ public class WidgetUtil {
 		shell.setBounds(rectShell);
 	}
 	
+	/**
+	 * Set the location of the given shell to the right top corner of the screen.
+	 * @param shell
+	 */
 	public static void layoutRightTop(Shell shell){
 		Display display = Display.getDefault();
 		Rectangle rectScreen = display.getBounds();
@@ -35,6 +43,17 @@ public class WidgetUtil {
 		rectShell.y = 50;
 
 		shell.setBounds(rectShell);
+	}
+	
+	/**
+	 * Set the location of the shell to the position of mouse(It doesn't perform well).
+	 * @param shell
+	 */
+	public static void layoutToCursor(Shell shell){
+		if(shell == null)
+			return;
+		Point cursorLoc = Display.getCurrent().getCursorLocation();
+		shell.setLocation(cursorLoc);
 	}
 	
 	public static Listener getVerifyDigitListener(){
@@ -52,17 +71,6 @@ public class WidgetUtil {
 			}
 			
 		};
-	}
-
-	public static int getIntValue(Text control) {
-		int t = 0;
-		try {
-			String val = control.getText().trim();
-			t = Integer.parseInt(val);
-		} catch (NumberFormatException e) {
-			throw e;
-		}
-		return t;
 	}
 
 
@@ -101,18 +109,6 @@ public class WidgetUtil {
 		return (T) t;
 	}
 	*/
-
-	public static TableItem getSelectItem(Table table) {
-		if (table == null)
-			return null;
-
-		TableItem[] items = table.getSelection();
-		if (items.length > 0) {
-			return items[0];
-		}
-
-		return null;
-	}
 	
 	/**
 	 * Check the if the widget is null or disposed or not.
@@ -153,16 +149,27 @@ public class WidgetUtil {
 		return suc;
 	}
 	
+	/**
+	 * Get the result of the given filter type and dialog type.
+	 * @param parent
+	 * @param fileType
+	 * @param dialogType
+	 * @return
+	 */
 	public static String openFileDialog(Shell parent, String fileType, int dialogType){
 		FileDialog dlg = new FileDialog(parent, dialogType);
 		dlg.setFilterExtensions(new String[]{fileType});
 		return dlg.open();
 	}
-	
-	public static Rectangle constrainRect(Rectangle frame, Rectangle rect){
-		return frame.intersection(rect);
-	}
 
+	/**
+	 * Utility method of getting combo in a table.
+	 * @param table
+	 * @param i
+	 * @param column
+	 * @param options
+	 * @return
+	 */
 	public static CCombo getTableCombo(Table table, TableItem i, int column, String[] options) {
 		if(table == null || i == null || column < 0 || options == null)
 			throw new IllegalArgumentException();
@@ -179,6 +186,14 @@ public class WidgetUtil {
 		return combo;
 	}
 
+	/**
+	 * Utility method of getting button in a table.
+	 * @param table
+	 * @param tableItem
+	 * @param column
+	 * @param text
+	 * @return
+	 */
 	public static Button getTableButton(Table table, TableItem tableItem, int column, String text) {
 		if(table == null || tableItem == null || column < 0)
 			throw new IllegalArgumentException();
@@ -192,6 +207,14 @@ public class WidgetUtil {
 		return btn;
 	}
 	
+	/**
+	 * Utility method of getting checkbox in a table.
+	 * @param table
+	 * @param tableItem
+	 * @param column
+	 * @param checked
+	 * @return
+	 */
 	public static Button getTableCheckBox(Table table, TableItem tableItem, int column, boolean checked){
 		if(table == null || tableItem == null || column < 0)
 			throw new IllegalArgumentException();
@@ -205,6 +228,12 @@ public class WidgetUtil {
 		return btn;
 	}
 	
+	/**
+	 * Utility method of getting file dialog filtering image files.
+	 * @param shell
+	 * @param type
+	 * @return
+	 */
 	public static FileDialog imageDialog(Shell shell, int type){
 		if(!(type == SWT.OPEN || type == SWT.SAVE))
 			return null;

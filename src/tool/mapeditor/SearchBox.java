@@ -14,6 +14,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+/**
+ * Search the nodes of the specified tree, it will automatically add a key event
+ * listener when the tree the be search is set.
+ * 
+ * @author caijw
+ * 
+ */
 public class SearchBox extends Composite{
 	private Tree searchTree;
 	private Text text;

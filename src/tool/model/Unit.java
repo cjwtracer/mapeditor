@@ -21,7 +21,8 @@ public class Unit extends Model{
 	static HashMap<Integer, PropHelper> propProto = new HashMap<Integer, PropHelper>();
 	
 	MapLayer layer;
-	Animation animation;
+	transient Animation animation;
+	int animID = -1;
 	int resourceID = -1;
 	int x;
 	int y;
@@ -55,10 +56,14 @@ public class Unit extends Model{
 	}
 	
 	public int getI(){
+		if(layer == null)
+			return y;
 		return y / layer.map.getTileHeight();
 	}
 	
 	public int getJ(){
+		if(layer == null)
+			return x;
 		return x / layer.map.getTileWidth();
 	}
 	
@@ -70,6 +75,8 @@ public class Unit extends Model{
 	
 	public void setX(int x){
 		this.x = x;
+		if(animation != null)
+			animation.x = x;
 	}
 	
 	public int getY(){
@@ -80,6 +87,8 @@ public class Unit extends Model{
 	
 	public void setY(int y){
 		this.y = y;
+		if(animation != null)
+			animation.y = y;
 	}
 	
 	public int getWidth(){
@@ -203,6 +212,8 @@ public class Unit extends Model{
 		u.alphaF = alphaF;
 		u.scale = scale;
 		u.type = type;
+		u.animation = animation;
+		u.animID = animID;
 		u.props = new ArrayList<Property>(getProperties().size());
 		for(Property p : props){
 			u.props.add(p.getCopy());
@@ -222,29 +233,37 @@ public class Unit extends Model{
 		return animation;
 	}
 
+	public void setAnimation(Animation a) {
+		animation = a;
+		if(a != null){
+			animID = a.getId();
+			a.x = x;
+			a.y = y;
+		}
+	}
+
 	public void setAlpha(int v) {
 		alpha = v;
 		alphaF = v / (float)256;
 	}
 	
-	public void addLocus(){
+	public void extendLocus(){
 		if(animation == null)
-			createAnimation(null);
+			createAnimation();
 		animation.extendLocus();
 	}
 	
 	public GradualChange addChange(byte type){
 		if(animation == null)
-			createAnimation(null);
+			createAnimation();
 		List<Queue> queues = animation.getQueues();
 		if(queues.size() != 0)
 			return queues.get(0).addChange(type);
 		return null;
 	}
 	
-	public void createAnimation(Animation proto){
-		if(proto == null);
-			animation = new Animation();
+	public Animation createAnimation(){
+		animation = new Animation();
 		animation.x = x;
 		animation.y = y;
 		animation.width = width;
@@ -253,6 +272,7 @@ public class Unit extends Model{
 		animation.alphaF = alphaF;
 		animation.scale = scale;
 		animation.rotation = rotation;
+		return animation;
 	}
 	
 	public static void parseProperties(String propFile){
@@ -266,6 +286,10 @@ public class Unit extends Model{
 	@Override
 	protected String[] getDefaultValues(String propName) {
 		return Model.getDftValues(propProto.get(type), propName);
+	}
+	
+	public int getAnimationID(){
+		return animID;
 	}
 
 }

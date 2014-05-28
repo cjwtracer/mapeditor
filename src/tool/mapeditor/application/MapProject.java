@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 
+import tool.model.Animation;
 import tool.model.Project;
 import tool.model.ResourceSet;
+import tool.model.UnitGroup;
 import tool.model.WorldMap;
 import tool.util.FileUtil;
 
@@ -23,12 +25,20 @@ public class MapProject implements Serializable, Project{
 	transient String expDir;
 	LinkedHashMap<Integer, WorldMap> mapGroup;
 	LinkedHashMap<Short, ResourceSet> resourceGroup;
+	LinkedHashMap<Integer, Animation> animationGroup;
+	LinkedHashMap<Integer, UnitGroup> unitsGroup;
 	
+
 	public MapProject(String workspace){
 		new File(workspace + File.separator + MAP_DIR).mkdir();
 		new File(workspace + File.separator + RES_DIR).mkdir();
 		new File(workspace + File.separator + EXPORT_DIR).mkdir();
 		path = workspace + File.separator;
+	}
+	public LinkedHashMap<Integer, UnitGroup> getUnitsGroup() {
+		if(unitsGroup == null)
+			unitsGroup = new LinkedHashMap<Integer, UnitGroup>();
+		return unitsGroup;
 	}
 	
 	public LinkedHashMap<Integer, WorldMap> getMapGroup(){
@@ -42,6 +52,22 @@ public class MapProject implements Serializable, Project{
 		return mapDir;
 	}
 
+	public int getAvailableUnitGroupId() {
+		int id = 0;
+		boolean exist = false;
+		do{
+			exist = false;
+			for(Integer i : getUnitsGroup().keySet()){
+				if(i == id){
+					exist = true;
+					++id;
+					break;
+				}
+			}
+		}while(exist);
+		return id;
+	}
+
 	public int getAvailableMapId() {
 		int id = FileUtil.getAvailableFileNameIndex(getMapDir(), MAP_EXT);
 		while(getMapGroup().keySet().contains(id)){
@@ -49,11 +75,38 @@ public class MapProject implements Serializable, Project{
 		}
 		return id;
 	}
+	
+	public String getAnimDir(){
+		StringBuffer p = new StringBuffer(path).append(ANIM_DIR).append(File.separator);
+		return FileUtil.checkPath(p.toString());
+	}
+
+	public int getAvailableAnimationID(){
+		int id = 0;
+		boolean exist = false;
+		do{
+			exist = false;
+			for(Integer i : getAnimationGroup().keySet()){
+				if(i == id){
+					exist = true;
+					++id;
+					break;
+				}
+			}
+		}while(exist);
+		return id;
+	}
 
 	public LinkedHashMap<Short, ResourceSet> getResourceGroup() {
 		if(resourceGroup == null)
 			resourceGroup = new LinkedHashMap<Short, ResourceSet>();
 		return resourceGroup;
+	}
+	
+	public LinkedHashMap<Integer, Animation> getAnimationGroup(){
+		if(animationGroup == null)
+			animationGroup = new LinkedHashMap<Integer, Animation>();
+		return animationGroup;
 	}
 	
 	public String getWorkspaceDir(){

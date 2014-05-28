@@ -48,7 +48,7 @@ public interface WorldMapPainter {
 	int getPixelHeight();
 
 	/**
-	 * Return whether the animations on the map are under playing.
+	 * Return whether the animations on the map are during playing.
 	 * @return
 	 */
 	boolean isPlay();

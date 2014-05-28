@@ -7,6 +7,8 @@ public interface Project {
 	String PRO = ".pro";
 	String MAP_EXT = ".m";
 	String RES_EXT = ".r";
+	String ANIM_EXT = ".a";
+	String ANIM_DIR = "anim";
 	String MAP_DIR = "map";
 	String RES_DIR = "res";
 	String EXPORT_DIR = "export";

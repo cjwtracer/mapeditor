@@ -1293,6 +1293,16 @@ public class ImageUtil {
 		return succeed;
 	}
 	
+	public static boolean supportedImageFormat(String img){
+		if(img != null){
+			for(String s : SURPORTED_FORMAT){
+				if(s.endsWith(img.substring(img.lastIndexOf("."))))
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	public static Image getMissingImage(){
 		return MISSING_IMAGE;
 	}

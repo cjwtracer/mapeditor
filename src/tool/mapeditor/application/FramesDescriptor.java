@@ -13,9 +13,11 @@ public class FramesDescriptor {
 	
 	List<FrameDescriptor> frames = new ArrayList<FrameDescriptor>();
 	FrameChange change;
+	UnitDescriptor unit;
 	
-	public FramesDescriptor(FrameChange change) {
+	public FramesDescriptor(FrameChange change, UnitDescriptor unit) {
 		this.change = change;
+		this.unit = unit;
 		for(ClipFrame c : change.getFrames()){
 			frames.add(new FrameDescriptor(c));
 		}
@@ -25,15 +27,15 @@ public class FramesDescriptor {
 		return frames;
 	}
 
-	void paint(Graphics graphics, int x, int y) {
-		if(change.getCount() == 0)
-			return;
-		if(change.getCurrentIndex() < change.getCount()){
-			FrameDescriptor f = frames.get(change.getCurrentIndex());
-			if(f.resource != null){
-				GLUtil.drawImage(f.resource.texture, x, y);
-			}
-		}
-	}
+//	void paint(Graphics graphics, int x, int y) {
+//		if(change.getCount() == 0)
+//			return;
+//		if(change.getCurrentIndex() < change.getCount()){
+//			FrameDescriptor f = frames.get(change.getCurrentIndex());
+//			if(f.resource != null){
+//				GLUtil.drawImage(f.resource.texture, x, y);
+//			}
+//		}
+//	}
 
 }

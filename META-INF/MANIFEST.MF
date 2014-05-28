@@ -13,4 +13,9 @@ Bundle-ClassPath: .,
  lwjgl_util.jar,
  lwjgl.jar,
  transform-3.0.2.jar,
- swing2swt.jar
+ swing2swt.jar,
+ resolver.jar,
+ serializer.jar,
+ xercesImpl.jar,
+ xml-apis.jar,
+ json-lib-2.4-jdk15.jar

@@ -72,6 +72,14 @@ public class Resources {
 		return getFont(fontName, fontSize, false, false);
 	}
 	
+	/**
+	 * Get a font from the cache by given details, or create it if there is not a corresponding one.
+	 * @param fontName
+	 * @param fontSize
+	 * @param bold
+	 * @param italic
+	 * @return
+	 */
 	public static Font getFont(String fontName, int fontSize, boolean bold, boolean italic)
 	{
 		if(fontName == null || fontSize <= 0)
@@ -110,6 +118,10 @@ public class Resources {
 		return tex;
 	}
 
+	/**
+	 * Get the font names supported.
+	 * @return
+	 */
 	public static String[] getFontNames() 
 	{
 		if(fonts == null){
@@ -131,6 +143,11 @@ public class Resources {
 		return fonts;
 	}
 
+	/**
+	 * Get the full file name of the font given by the font name.
+	 * @param name
+	 * @return
+	 */
 	public static String fullFontName(String name) {
 		if(name == null)
 			throw new IllegalArgumentException();

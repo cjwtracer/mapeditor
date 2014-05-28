@@ -11,23 +11,26 @@ public class AnimationDescriptor {
 	Animation animation;
 	LocusDescriptor locus;
 	FramesDescriptor frames;
+	UnitDescriptor unit;
 	
-	public AnimationDescriptor(Animation animation){
+	public AnimationDescriptor(Animation animation, UnitDescriptor unit){
 		if(animation == null)
 			throw new NullPointerException();
 		this.animation = animation;
 		locus = new LocusDescriptor(animation.getLocus(), animation);
 		for(GradualChange c : animation.getChanges()){
 			if(c.type == GradualChange.CHANGE_FRAME){
-				frames = new FramesDescriptor((FrameChange)c);
+				frames = new FramesDescriptor((FrameChange)c, unit);
 				break;
 			}
 		}
+		this.unit = unit;
 	}
 
 	public void paint(Graphics graphics, int offx, int offy, int width, int height, int trans) {
 		locus.paint(graphics, offx, offy, -1, -1, -1);
-		frames.paint(graphics, offx + animation.getX(), offy + animation.getY());
+//		if(frames != null)
+//			frames.paint(graphics, offx + animation.getX(), offy + animation.getY());
 	}
 
 	public int getAlpha() {
@@ -67,7 +70,7 @@ public class AnimationDescriptor {
 	}
 
 	public FramesDescriptor newFrames(FrameChange change) {
-		frames = new FramesDescriptor(change);
+		frames = new FramesDescriptor(change, unit);
 		return frames;
 	}
 
